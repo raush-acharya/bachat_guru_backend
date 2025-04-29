@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { check, validationResult } from "express-validator";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import mongoose from "mongoose";
 import { User, PasswordResetToken } from "../databaseSchema/database.model.js";
 import authMiddleware from "../Middleware/auth.js";
 
@@ -235,5 +236,74 @@ userController.get("/user", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+
+// Input validation for changing password
+const changePasswordValidation = [
+  check("currentPassword")
+    .notEmpty()
+    .withMessage("Current password is required"),
+  check("newPassword")
+    .isLength({ min: 6 })
+    .withMessage("New password must be at least 6 characters long"),
+  check("confirmPassword")
+    .notEmpty()
+    .withMessage("Confirm password is required"),
+];
+
+// Change password endpoint
+userController.post(
+  "/change-password",
+  [authMiddleware, changePasswordValidation],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const userId = new mongoose.Types.ObjectId(req.user.userId);
+
+    try {
+      // Find the user
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Validate current password
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res
+          .status(400)
+          .json({ message: "Current password is incorrect" });
+      }
+
+      // Validate new password matches confirmation
+      if (newPassword !== confirmPassword) {
+        return res
+          .status(400)
+          .json({ message: "New password and confirmation do not match" });
+      }
+
+      // Hash the new password
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(newPassword, salt);
+
+      // Save the updated user
+      await user.save();
+
+      // Optionally: Invalidate the current token (force logout)
+      // In a real app, you might want to store tokens in a database and invalidate them here.
+      // For simplicity, we'll just return a success message and let the frontend handle logout.
+
+      res.json({
+        message: "Password changed successfully. Please log in again.",
+      });
+    } catch (error) {
+      console.error("Change Password Error:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  }
+);
 
 export default userController;
