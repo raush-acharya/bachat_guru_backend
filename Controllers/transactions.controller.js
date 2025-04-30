@@ -8,7 +8,7 @@ const router = Router();
 router.get("/", authMiddleware, async (req, res) => {
   const { startDate, endDate, categoryId, paymentMethod } = req.query;
   let userId;
-  
+
   // Validate and convert userId to ObjectId
   try {
     userId = new mongoose.Types.ObjectId(req.user.userId);
@@ -57,6 +57,16 @@ router.get("/", authMiddleware, async (req, res) => {
       { $group: { _id: null, totalExpenses: { $sum: "$amount" } } },
     ]);
     const totalExpenses = expenseResult[0]?.totalExpenses || 0;
+
+    // Fetch incomes with populated category and notes
+    const incomes = await Income.find(query)
+      .populate("categoryId", "name type")
+      .select("amount date notes paymentMethod categoryId");
+
+    // Fetch expenses with populated category and notes
+    const expenses = await Expense.find(query)
+      .populate("categoryId", "name type")
+      .select("amount date notes paymentMethod categoryId");
 
     // Aggregate by category for breakdown
     const incomeByCategory = await Income.aggregate([
@@ -119,8 +129,10 @@ router.get("/", authMiddleware, async (req, res) => {
       netMoney,
       incomeCount,
       expenseCount,
-      incomeByCategory, // e.g., [{ categoryName: "Salary", categoryType: "income", total: 5000 }]
-      expensesByCategory, // e.g., [{ categoryName: "Food", categoryType: "expense", total: 1000 }]
+      incomes, // Include incomes with notes
+      expenses, // Include expenses with notes
+      incomeByCategory,
+      expensesByCategory,
     });
   } catch (error) {
     console.error("Aggregation Error:", error);
