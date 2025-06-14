@@ -9,9 +9,9 @@ import incomeController from "./Controllers/income.controller.js";
 import expenseController from "./Controllers/expense.controller.js";
 import categoryController from "./Controllers/category.controller.js";
 import transactionsController from "./Controllers/transactions.controller.js";
-import budgetController from "./Controllers/budget.controller.js"
-import notificationsController from "./Controllers/notifications.controller.js"
-import dashboardController from "./Controllers/dashboard.controller.js"
+import budgetController from "./Controllers/budget.controller.js";
+import notificationsController from "./Controllers/notifications.controller.js";
+import dashboardController from "./Controllers/dashboard.controller.js";
 
 dotenv.config();
 
@@ -32,9 +32,13 @@ app.use("/api/income", incomeController);
 app.use("/api/expense", expenseController);
 app.use("/api/category", categoryController);
 app.use("/api/transactions", transactionsController);
-app.use("/api/budget", budgetController)
-app.use("/api/notifications", notificationsController)
-app.use("/api/dashboard", dashboardController)
+app.use("/api/budget", budgetController);
+app.use("/api/notifications", notificationsController);
+app.use("/api/dashboard", dashboardController);
+
+app.get("/health", (req, res) => {
+  res.status(200).send("Server is healthy");
+});
 
 // Start server
 const startServer = async () => {
