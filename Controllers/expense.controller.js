@@ -120,7 +120,7 @@ router.post("/", authMiddleware, expenseValidation, async (req, res) => {
           const notification = new Notification({
             userId,
             type: "budget_overrun",
-            message: `Your "${budget.budgetName}" budget for ${budget.categoryId?.name || "Unknown"} has been exceeded (Spent: $${spent}, Budget: $${budget.amount})`,
+            message: `Your "${budget.budgetName}" budget for ${budget.categoryId?.name || "Unknown"} has been exceeded (Spent: Rs${spent}, Budget: Rs${budget.amount})`,
             relatedId: budget._id,
           });
           await notification.save();
@@ -198,7 +198,7 @@ router.put("/:id", authMiddleware, expenseValidation, async (req, res) => {
           const notification = new Notification({
             userId,
             type: "budget_overrun",
-            message: `Your "${budget.budgetName}" budget for ${budget.categoryId?.name || "Unknown"} has been exceeded (Spent: $${spent}, Budget: $${budget.amount})`,
+            message: `Your "${budget.budgetName}" budget for ${budget.categoryId?.name || "Unknown"} has been exceeded (Spent: Rs${spent}, Budget: Rs${budget.amount})`,
             relatedId: budget._id,
           });
           await notification.save();

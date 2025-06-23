@@ -271,7 +271,7 @@ cron.schedule("0 0 * * *", async () => {
         await Notification.create({
           userId: budget.userId,
           type: "budget_overrun",
-          message: `Budget "${budget.budgetName}" exceeded: Spent $${spent} of $${budget.amount}`,
+          message: `Budget "${budget.budgetName}" exceeded: Spent Rs${spent} of Rs${budget.amount}`,
         });
       }
     }

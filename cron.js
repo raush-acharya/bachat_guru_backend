@@ -25,7 +25,7 @@ cron.schedule("0 0 * * *", async () => {
         await Notification.create({
           userId: expense.userId,
           type: "recurring_expense",
-          message: `Recurring expense via ${expense.paymentMethod} of $${expense.amount} due tomorrow`,
+          message: `Recurring expense via ${expense.paymentMethod} of Rs${expense.amount} due tomorrow`,
           relatedId: expense._id, // Add relatedId
         });
       }

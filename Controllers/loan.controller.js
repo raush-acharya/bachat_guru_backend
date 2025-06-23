@@ -621,7 +621,7 @@ cron.schedule("0 0 * * *", async () => {
           const notification = new Notification({
             userId: loan.userId,
             type: "loan_payment_overdue",
-            message: `OVERDUE: Your "${loan.title}" payment of $${loan.paymentAmount.toFixed(2)} was due on ${
+            message: `OVERDUE: Your "${loan.title}" payment of Rs${loan.paymentAmount.toFixed(2)} was due on ${
               loan.nextDueDate.toISOString().split("T")[0]
             } (${daysOverdue} days overdue)`,
             relatedId: loan._id,
@@ -655,7 +655,7 @@ cron.schedule("0 0 * * *", async () => {
         const notification = new Notification({
           userId: loan.userId,
           type: "loan_payment",
-          message: `Reminder: Your "${loan.title}" payment of $${loan.paymentAmount.toFixed(2)} is due on ${
+          message: `Reminder: Your "${loan.title}" payment of Rs${loan.paymentAmount.toFixed(2)} is due on ${
             loan.nextDueDate.toISOString().split("T")[0]
           }`,
           relatedId: loan._id,
